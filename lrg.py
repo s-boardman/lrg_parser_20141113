@@ -33,7 +33,7 @@ def main():
 def get_element_text(value):
     '''Returns text of selected element'''
     for element in root.findall(value):
-        assert len(element) > 0, 'Element has no associated text' 
+        assert len(element.text) > 0, 'Element has no associated text' 
         return element.text
 
 def get_file_info(tree):
@@ -78,4 +78,3 @@ ref_seq = get_element_text('./fixed_annotation/sequence')
 lrg_info = get_file_info(root)
 exon_info = get_exon_info('./fixed_annotation/transcript/exon', 'label')
 fasta = get_fasta(exon_info,lrg_info)
-
