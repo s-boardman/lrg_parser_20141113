@@ -28,6 +28,14 @@ def get_element_text(value):
     for element in root.findall(value):
         return element.text
 
+# Pull out sequence identifiers to write into fasta headers
+
+def get_file_info(tree):
+    lrg_id = get_element_text('./fixed_annotation/id')
+    hgnc_id = get_element_text('./fixed_annotation/hgnc_id')
+    file_id = 'LRG ID:' + lrg_id + ' HGNC ID:' + hgnc_id + ' Exon: '
+    return file_id
+
 # Get exon coordinates
 
 def get_exon_info(path, value):
@@ -38,7 +46,7 @@ def get_exon_info(path, value):
 
 # Get fasta format
 
-def get_fasta(exon_dict):
+def get_fasta(exon_dict,file_info):
     file = open(fasta,'w')
     for exon in sorted(exon_dict):
         if include_introns == True:
@@ -47,7 +55,7 @@ def get_fasta(exon_dict):
         else:
             start = int(exon_dict[exon]['start'])
             end = int(exon_dict[exon]['end'])
-        file.write('>' + exon + '\n')
+        file.write('>' + file_info + exon + '\n')
         file.write(ref_seq[start-1: end-1] + '\n')
     file.close()
 
@@ -55,8 +63,9 @@ def get_fasta(exon_dict):
 main()
 # Call functions to produce output
 ref_seq = get_element_text('./fixed_annotation/sequence')
+lrg_info = get_file_info(root)
 exon_info = get_exon_info('./fixed_annotation/transcript/exon', 'label')
-fasta = get_fasta(exon_info)
+fasta = get_fasta(exon_info,lrg_info)
 
 # Capture transcripts
 
