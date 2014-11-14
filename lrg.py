@@ -6,6 +6,7 @@ import xml.etree.ElementTree as et, argparse, sys
 
 def main():
     '''Main function that collects command line arguments and assigns to global variables'''
+    # Establish global parameters to be used
     global lrg_file, fasta, tree, root, include_introns, intron
     parser = argparse.ArgumentParser()
     parser.add_argument('LRG_file',  help = 'Input LRG filename')
@@ -16,29 +17,34 @@ def main():
     lrg_file = args.LRG_file
     fasta = args.Out_file
     
+    # Check a valid integer value has been provided for flanking intron sequences
     try:
         intron = int(args.i)
     except:
         print 'Please provide an integer value for flanking sequence'
         sys.exit()
 
+    # Set flag to be used for including intronic sequence in output
     if args.i:
         include_introns = True
     else:
         include_introns = False
 
+    # Check file is available and a valid .xml file
     try:
         tree = et.parse(lrg_file) 
     except:
         print 'Unable to parse/open file'
         sys.exit()
-        
+    
+    # Check file is an lrg file and establish root    
     root = tree.getroot()
     assert root.tag == 'lrg', 'Input file is not a valid LRG file'
 
 def get_element_text(value):
     '''Returns text of selected element'''
     for element in root.findall(value):
+        # Check element has associated text
         assert len(element.text) > 0, 'Element has no associated text' 
         return element.text
 
@@ -56,30 +62,31 @@ def get_exon_info(path, value):
     '''Gets coordinates of exons'''
     exon_dict = {}
     for element in root.findall(path):
-        assert len(element[0].attrib) > 0, 'Exon is missing start/end coordinates'
         exon_dict[element.get(value).zfill(3)] = element[0].attrib
+    # Check we have collected exons 
     assert len(exon_dict) > 0, 'No Exons found in file'
     return exon_dict
 
 def get_fasta(exon_dict,file_info):
     '''Collates sequences and outputs fasta files'''
-    file = open(fasta,'w')
-    for exon in sorted(exon_dict):
-            try:
-                start = int(exon_dict[exon]['start'])
-                end = int(exon_dict[exon]['end'])
-            except KeyError:
-                print 'Start/End Coordinates not present for at least one exon'
-                sys.exit()
-
-            if include_introns == False:
-                file.write('>' + get_file_info(tree) + exon + '\n')
-                file.write(ref_seq[start-1: end] + '\n')
-            elif include_introns == True:
-                file.write('>' + get_file_info(tree) + exon + '\n')
-                file.write(ref_seq[start-(intron+1): start-1].lower() + ref_seq[start-1: end] + ref_seq[end: end+intron].lower() + '\n')
-    print 'Fasta file (' + fasta + ') written to file.'
-    file.close()
+    with open(fasta,'w+') as file:
+        for exon in sorted(exon_dict):
+                # Check we have start and end coordinates for all exons
+                try:
+                    start = int(exon_dict[exon]['start'])
+                    end = int(exon_dict[exon]['end'])
+                except KeyError:
+                    print 'Start/End Coordinates not present for at least one exon'
+                    sys.exit()
+                
+                # Include flanking intronic regions as specified in fasta output if requested     
+                if include_introns == False:
+                    file.write('>' + get_file_info(tree) + exon + '\n')
+                    file.write(ref_seq[start-1: end] + '\n')
+                elif include_introns == True:
+                    file.write('>' + get_file_info(tree) + exon + '\n')
+                    file.write(ref_seq[start-(intron+1): start-1].lower() + ref_seq[start-1: end] + ref_seq[end: end+intron].lower() + '\n')
+        print 'Fasta file (' + fasta + ') written to file.'
 
 # Call main to get inputs
 main()
