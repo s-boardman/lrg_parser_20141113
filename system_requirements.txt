@@ -1,0 +1,35 @@
+System Requirements Specification
+
+Introduction: Overview and Purpose
+The Locus Reference Genomic (LRG) project was undertaken to provide a consistent referencing system for variant reporting. With the formation of the project and the creation of over 400 public LRG’s there is a requirement to build tools to enable the convenient use of these reference sequences in diagnostic laboratories. The purpose of this document is to describe a gene parser which can extract information from LRG gene files in XML format, and produce a FASTA output file. 
+
+Resource Requirements of the Client
+  The client requests that:
+  •	The code written to parse the LRG XML files.
+  •	The code can be reused on any LRG XML file and produce the same standard output.
+  •	The LRG XML parser should extract primarily genomic sequence information, with potentially the ability to call intronic      and exonic information separately.
+
+Software and Hardware used for this project:
+  •	IPython, version 2.3 
+  •	Python, version 2.7.6
+    o	Anaconda version 1.9.1 (32-bit)
+  •	PC 
+    o	OS: Windows (32 GB)
+  •	Oracle VM Virtual Machine
+    o	OS: Ubuntu (32 bit)
+
+Schedule
+Assumptions:
+  •	That the client will have access to a command line interface.
+  •	All documentation will be provided in English only.
+
+Documentation Schedule:
+  •	Documentation of the SOP and system requirements will be provided to the client on completion of the project.
+
+Deliverables
+Specifications:
+  •	Two documents provided upon completion.
+  •	Format of the code (python).
+  •	Version control help.
+  •	Design constraints- follow provided Standard Operating Procedure (SOP) to navigate.
+  •	SOP- provides information on the internal workings of the LRG XML parser.
