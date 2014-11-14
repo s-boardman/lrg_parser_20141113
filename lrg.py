@@ -6,15 +6,21 @@ import xml.etree.ElementTree as et, argparse, sys
 
 def main():
     '''Main function that collects command line arguments and assigns to global variables'''
-    global lrg_file, fasta, tree, root, include_introns
+    global lrg_file, fasta, tree, root, include_introns, intron
     parser = argparse.ArgumentParser()
     parser.add_argument('LRG_file',  help = 'Input LRG filename')
     parser.add_argument('Out_file', help = 'Output fasta filename')
-    parser.add_argument('-i', help = 'Includes 100bp on either side of exon', action = 'store_true')
+    parser.add_argument('-i', help = 'Includes user defined length flanking intronic sequence. Parameter must be integer', default = '0')
 
     args = parser.parse_args()
     lrg_file = args.LRG_file
     fasta = args.Out_file
+    
+    try:
+        intron = int(args.i)
+    except:
+        print 'Please provide an integer value for flanking sequence'
+        sys.exit()
 
     if args.i:
         include_introns = True
@@ -39,8 +45,11 @@ def get_element_text(value):
 def get_file_info(tree):
     '''Creates fasta headers to write into output file'''
     lrg_id = get_element_text('./fixed_annotation/id')
-    hgnc_id = get_element_text('./fixed_annotation/hgnc_id')
-    file_id = 'LRG ID:' + lrg_id + ' HGNC ID:' + hgnc_id + ' Exon: '
+    if  len(get_element_text('./fixed_annotation/hgnc_id')) > 0:
+	hgnc_id = get_element_text('.fixed_annotation/hgnc_id')
+	file_id = 'LRG_ID:' + lrg_id + '_HGNC_ID:' + hgnc_id + '_Exon:'
+    else:
+        file_id = 'LRG_ID:' + lrg_id + '_Exon:'
     return file_id
 
 def get_exon_info(path, value):
@@ -65,10 +74,11 @@ def get_fasta(exon_dict,file_info):
 
             if include_introns == False:
                 file.write('>' + get_file_info(tree) + exon + '\n')
-                file.write(ref_seq[start-1: end-1] + '\n')
+                file.write(ref_seq[start-1: end] + '\n')
             elif include_introns == True:
                 file.write('>' + get_file_info(tree) + exon + '\n')
-                file.write(ref_seq[start-101: start-2].lower() + ref_seq[start-1: end-1] + ref_seq[end: end+100].lower() + '\n')
+                file.write(ref_seq[start-(intron+1): start-1].lower() + ref_seq[start-1: end] + ref_seq[end: end+intron].lower() + '\n')
+    print 'Fasta file (' + fasta + ') written to file.'
     file.close()
 
 # Call main to get inputs
