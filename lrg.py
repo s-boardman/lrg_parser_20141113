@@ -5,6 +5,7 @@ import xml.etree.ElementTree as et, argparse
 # Get parameters
 
 def main():
+    global lrg_file, fasta, tree, root, include_introns
     parser = argparse.ArgumentParser()
     parser.add_argument('LRG_file',  help = 'Input LRG filename')
     parser.add_argument('Out_file', help = 'Output fasta filename')
@@ -41,14 +42,14 @@ def get_exon_info(path, value):
 def get_fasta(exon_dict):
     file = open(fasta,'w')
     for exon in sorted(exon_dict):
-        if include_introns == True:
-            start = int(exon_dict[exon]['start']) - 50
-            end = int(exon_dict[exon]['end']) + 50
-        else:
             start = int(exon_dict[exon]['start'])
             end = int(exon_dict[exon]['end'])
-        file.write('>' + exon + '\n')
-        file.write(ref_seq[start-1: end-1] + '\n')
+            if include_introns == False:
+                file.write('>' + exon + '\n')
+                file.write(ref_seq[start-1: end-1] + '\n')
+            elif include_introns == True:
+                file.write('>' + exon + '\n')
+                file.write(ref_seq[start-101: start-2].lower() + ref_seq[start-1: end-1] + ref_seq[end: end+100] + '\n')
     file.close()
 
 # Call main to get inputs
