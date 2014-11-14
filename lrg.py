@@ -53,10 +53,10 @@ def get_fasta(exon_dict,file_info):
             start = int(exon_dict[exon]['start'])
             end = int(exon_dict[exon]['end'])
             if include_introns == False:
-                file.write('>' + get_file_info(tree) + '\n')
+                file.write('>' + get_file_info(tree) + exon + '\n')
                 file.write(ref_seq[start-1: end-1] + '\n')
             elif include_introns == True:
-                file.write('>' + get_file_info(tree) + '\n')
+                file.write('>' + get_file_info(tree) + exon + '\n')
                 file.write(ref_seq[start-101: start-2].lower() + ref_seq[start-1: end-1] + ref_seq[end: end+100].lower() + '\n')
     file.close()
 
