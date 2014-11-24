@@ -13,4 +13,4 @@ Exonic sequences only:
 
 With user specified intronic region:
 
-- python lrg.py input_file.xml output_file.fa -i 
+- python lrg.py input_file.xml output_file.fa -i 10
