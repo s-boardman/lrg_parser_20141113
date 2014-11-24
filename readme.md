@@ -9,8 +9,8 @@ Include flexibility to return genomic or transcriptomic sequence, with the possi
 ## Usage notes
 
 Exonic sequences only:
-- python lrg.py input_file.xml outpur_file.fa
+- python lrg.py input_file.xml output_file.fa
 
 With user specified intronic region:
 
-- python lrg.py input_file.xml outpur_file.fa -i 
+- python lrg.py input_file.xml output_file.fa -i 
